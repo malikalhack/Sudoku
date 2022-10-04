@@ -1,5 +1,7 @@
 ﻿#include "Analysis.h"
 #include <stdio.h>
+#include <locale>
+
 #define VERTICAL_SIZE   (9)
 #define HORIZONTAL_SIZE (9)
 /*
@@ -40,6 +42,7 @@ void Sudoku::Calculate() {
 }
 
 void Sudoku::Print() {
+    setlocale(LC_ALL, "Russian_Russia.20866");
     wprintf(L"╔═══╤═══╤═══╦═══╤═══╤═══╦═══╤═══╤═══╗\n");
     for (size_t vert = 0; vert < VERTICAL_SIZE; vert++) {
         for (size_t horiz = 0; horiz < HORIZONTAL_SIZE; horiz++) {
