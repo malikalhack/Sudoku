@@ -19,28 +19,6 @@ static inline void FindSquareLimits_(
     *start_x = reg_x * 3;
 }
 
-/*
-╔═══╤═══╤═══╦═══╤═══╤═══╦═══╤═══╤═══╗
-║ 6 │ 4 │   ║ 8 │ 3 │ 1 ║ 5 │ 2 │   ║
-╟───┼───┼───╫───┼───┼───╫───┼───┼───╢
-║   │   │ 1 ║ 6 │ 7 │ 2 ║ 8 │ 9 │   ║
-╟───┼───┼───╫───┼───┼───╫───┼───┼───╢
-║ 8 │   │ 7 ║ 5 │ 4 │   ║ 1 │ 6 │   ║
-╠═══╪═══╪═══╬═══╪═══╪═══╬═══╪═══╪═══╣
-║   │   │   ║ 1 │ 5 │   ║   │ 8 │   ║
-╟───┼───┼───╫───┼───┼───╫───┼───┼───╢
-║   │   │   ║   │   │ 6 ║   │   │   ║
-╟───┼───┼───╫───┼───┼───╫───┼───┼───╢
-║ 7 │ 5 │   ║   │   │   ║   │   │ 6 ║
-╠═══╪═══╪═══╬═══╪═══╪═══╬═══╪═══╪═══╣
-║   │ 6 │ 2 ║ 4 │ 1 │   ║   │   │   ║
-╟───┼───┼───╫───┼───┼───╫───┼───┼───╢
-║   │   │ 4 ║ 9 │ 2 │   ║   │   │   ║
-╟───┼───┼───╫───┼───┼───╫───┼───┼───╢
-║   │ 8 │ 5 ║   │   │ 3 ║   │ 4 │ 9 ║
-╚═══╧═══╧═══╩═══╧═══╧═══╩═══╧═══╧═══╝
-*/
-
 Sudoku::Sudoku(complexity level) {
     _solved = false;
     for (size_t i = 0; i < MAX_NUM; i++) _elements[i] = MAX_NUM;
@@ -48,13 +26,6 @@ Sudoku::Sudoku(complexity level) {
 }
 
 Sudoku::~Sudoku() {}
-
-void Sudoku::Calculate() {
-    info_print("Calculation started...");
-    FillingOptionalValues_();
-    Algorithm_();
-    info_print("Calculation completed.\n");
-}
 
 void Sudoku::Print() {
     setlocale(LC_ALL, "Russian_Russia.20866");
@@ -84,9 +55,44 @@ void Sudoku::Print() {
     wprintf(L"║\n╚═══╧═══╧═══╩═══╧═══╧═══╩═══╧═══╧═══╝\n\n");
 }
 
-/**
- * @todo
- */
+void Sudoku::Calculate() {
+    info_print("Calculation started...");
+    FillingOptionalValues_();
+    Algorithm_();
+    info_print("Calculation completed.\n");
+}
+
+bool Sudoku::IsSolved() {
+    return _solved;
+}
+
+/*
+╔═══╤═══╤═══╦═══╤═══╤═══╦═══╤═══╤═══╗
+║ 6 │ 4 │   ║ 8 │ 3 │ 1 ║ 5 │ 2 │   ║
+╟───┼───┼───╫───┼───┼───╫───┼───┼───╢
+║   │   │ 1 ║ 6 │ 7 │ 2 ║ 8 │ 9 │   ║
+╟───┼───┼───╫───┼───┼───╫───┼───┼───╢
+║ 8 │   │ 7 ║ 5 │ 4 │   ║ 1 │ 6 │   ║
+╠═══╪═══╪═══╬═══╪═══╪═══╬═══╪═══╪═══╣
+║   │   │   ║ 1 │ 5 │   ║   │ 8 │   ║
+╟───┼───┼───╫───┼───┼───╫───┼───┼───╢
+║   │   │   ║   │   │ 6 ║   │   │   ║
+╟───┼───┼───╫───┼───┼───╫───┼───┼───╢
+║ 7 │ 5 │   ║   │   │   ║   │   │ 6 ║
+╠═══╪═══╪═══╬═══╪═══╪═══╬═══╪═══╪═══╣
+║   │ 6 │ 2 ║ 4 │ 1 │   ║   │   │   ║
+╟───┼───┼───╫───┼───┼───╫───┼───┼───╢
+║   │   │ 4 ║ 9 │ 2 │   ║   │   │   ║
+╟───┼───┼───╫───┼───┼───╫───┼───┼───╢
+║   │ 8 │ 5 ║   │   │ 3 ║   │ 4 │ 9 ║
+╚═══╧═══╧═══╩═══╧═══╧═══╩═══╧═══╧═══╝
+*/
+void Sudoku::Algorithm_() {
+    FindTheOnlyOption_();
+    /* ... */
+    _solved = true;
+}
+
 void Sudoku::GeneratePuzzle_(complexity level) {
     (void)level;
     _data[0][0].fixed = 6;
@@ -161,7 +167,6 @@ void Sudoku::FillingOptionalValues_() {
     }
 }
 
-
 bool Sudoku::CheckingCell_(
     uint8_t const * const num,
     uint8_t const * const cx,
@@ -230,14 +235,4 @@ void Sudoku::FindTheOnlyOption_() {
             }
         }
     }
-}
-
-void Sudoku::Algorithm_() {
-    FindTheOnlyOption_();
-    /* ... */
-    _solved = true;
-}
-
-bool Sudoku::IsSolved() {
-    return _solved;
 }

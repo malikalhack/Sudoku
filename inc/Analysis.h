@@ -2,7 +2,7 @@
 #define ANALYSIS_H_
 
 #include <cstdint>
-#define MAX_NUM         (9)
+#define MAX_NUM         (9u)
 #define VERTICAL_SIZE   MAX_NUM
 #define HORIZONTAL_SIZE MAX_NUM
 
