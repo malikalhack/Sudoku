@@ -2,6 +2,9 @@
 #define ANALYSIS_H_
 
 #include <cstdint>
+#define MAX_NUM         (9)
+#define VERTICAL_SIZE   MAX_NUM
+#define HORIZONTAL_SIZE MAX_NUM
 
 typedef enum {
     EASY = 0,
@@ -32,27 +35,21 @@ private:
             uint16_t reserv : 7;
         } options;
         uint8_t fixed;
-    } _data[9][9] = {};
+    } _data[VERTICAL_SIZE][HORIZONTAL_SIZE] = {};
 
-    struct elements_t {
-        uint8_t one;
-        uint8_t two;
-        uint8_t three;
-        uint8_t four;
-        uint8_t five;
-        uint8_t six;
-        uint8_t seven;
-        uint8_t eight;
-        uint8_t nine;
-    } _elements;
+    uint8_t _elements[MAX_NUM];
 
     bool _solved;
-    bool _filled;
 
     void GeneratePuzzle_(complexity);
-    void FillingFields_();
-    void CheckingFields_();
-    void CleaningFields_();
+    bool CheckingCell_(
+        uint8_t const * const,
+        uint8_t const * const,
+        uint8_t const * const
+    );
+    void FillingOptionalValues_();
+    void FindTheOnlyOption_();
+    void CleaningField_();
     void Algorithm_();
 };
 
