@@ -3,7 +3,7 @@
  * @version 1.0.0
  * @authors Anton Chernov
  * @date    02/10/2022
- * @date    07/10/2022
+ * @date    08/10/2022
  */
 
 /****************************** Included files ********************************/
@@ -20,6 +20,12 @@
     getchar();\
     exit(EXIT_FAILURE);\
 }
+enum direction {
+    ROW = 0,
+    COLUMN,
+    SQUARE
+};
+
 /****************************** Private  functions ****************************/
 static inline void FindSquareLimits_(
     uint8_t * const start_x,
@@ -81,6 +87,17 @@ bool Sudoku::IsSolved() {
     return _solved;
 }
 /*----------------------------------------------------------------------------*/
+void Sudoku::Algorithm_() {
+    do {
+        OptimizeBoard_();
+        FindTheOnlyOption_();
+        CheckingSolved_();
+    } while (++cycles < CYCLES_LIMIT && !_solved);
+    if (cycles >= CYCLES_LIMIT) {
+        warning_print("The number of cycles (%u) has exceeded the limit", cycles);
+    }
+}
+/*************************** Class implementation *****************************/
 /*
 ╔═══╤═══╤═══╦═══╤═══╤═══╦═══╤═══╤═══╗
 ║ 6 │ 4 │   ║ 8 │ 3 │ 1 ║ 5 │ 2 │   ║
@@ -102,82 +119,83 @@ bool Sudoku::IsSolved() {
 ║   │ 8 │ 5 ║   │   │ 3 ║   │ 4 │ 9 ║
 ╚═══╧═══╧═══╩═══╧═══╧═══╩═══╧═══╧═══╝
 */
-void Sudoku::Algorithm_() {
-    do {
-        FindTheOnlyOption_();
-        /* ... */
-        CheckingSolved_();
-    } while (++cycles < CYCLES_LIMIT && !_solved);
-    if (cycles >= CYCLES_LIMIT) {
-        warning_print("The number of cycles (%u) has exceeded the limit", cycles);
-    }
-}
-/*************************** Class implementation *****************************/
 void Sudoku::GeneratePuzzle_(complexity level) {
     switch (level) {
-        case EASY   : info_print("Select EASY mode");   break;
-        case NORMAL : info_print("Select NORMAL mode"); break;
-        case HARD   : info_print("Select HARD mode");   break;
+        case EASY:
+            info_print("Select EASY mode");
+            warning_print("Generator is not implemented");
+            _data[0][0].fixed = 6;
+            _data[0][1].fixed = 4;
+            _data[0][3].fixed = 8;
+            _data[0][4].fixed = 3;
+            _data[0][5].fixed = 1;
+            _data[0][6].fixed = 5;
+            _data[0][7].fixed = 2;
+
+            _data[1][2].fixed = 1;
+            _data[1][3].fixed = 6;
+            _data[1][4].fixed = 7;
+            _data[1][5].fixed = 2;
+            _data[1][6].fixed = 8;
+            _data[1][7].fixed = 9;
+
+            _data[2][0].fixed = 8;
+            _data[2][2].fixed = 7;
+            _data[2][3].fixed = 5;
+            _data[2][4].fixed = 4;
+            _data[2][6].fixed = 1;
+            _data[2][7].fixed = 6;
+
+            _data[3][3].fixed = 1;
+            _data[3][4].fixed = 5;
+            _data[3][7].fixed = 8;
+
+            _data[4][5].fixed = 6;
+
+            _data[5][0].fixed = 7;
+            _data[5][1].fixed = 5;
+            _data[5][8].fixed = 6;
+
+            _data[6][1].fixed = 6;
+            _data[6][2].fixed = 2;
+            _data[6][3].fixed = 4;
+            _data[6][4].fixed = 1;
+
+            _data[7][2].fixed = 4;
+            _data[7][3].fixed = 9;
+            _data[7][4].fixed = 2;
+
+            _data[8][1].fixed = 8;
+            _data[8][2].fixed = 5;
+            _data[8][5].fixed = 3;
+            _data[8][7].fixed = 4;
+            _data[8][8].fixed = 9;
+
+            _elements[0] -= 5; //1
+            _elements[1] -= 4; //2
+            _elements[2] -= 2; //3
+            _elements[3] -= 5; //4
+            _elements[4] -= 5; //5
+            _elements[5] -= 6; //6
+            _elements[6] -= 3; //7
+            _elements[7] -= 5; //8
+            _elements[8] -= 3; //9
+            break;
+        case NORMAL:
+            info_print("Select NORMAL mode");
+            warning_print("Not implemented");
+            break;
+        case HARD:
+            info_print("Select HARD mode");
+            warning_print("Not implemented");
+            break;
+        case EXPERT:
+            info_print("Select EXPERT mode");
+            warning_print("Not implemented");
+            break;
     default:
         ERROR_EXIT("Select wrong option");
     }
-    //TODO: Create real generator
-    _data[0][0].fixed = 6;
-    _data[0][1].fixed = 4;
-    _data[0][3].fixed = 8;
-    _data[0][4].fixed = 3;
-    _data[0][5].fixed = 1;
-    _data[0][6].fixed = 5;
-    _data[0][7].fixed = 2;
-
-    _data[1][2].fixed = 1;
-    _data[1][3].fixed = 6;
-    _data[1][4].fixed = 7;
-    _data[1][5].fixed = 2;
-    _data[1][6].fixed = 8;
-    _data[1][7].fixed = 9;
-
-    _data[2][0].fixed = 8;
-    _data[2][2].fixed = 7;
-    _data[2][3].fixed = 5;
-    _data[2][4].fixed = 4;
-    _data[2][6].fixed = 1;
-    _data[2][7].fixed = 6;
-
-    _data[3][3].fixed = 1;
-    _data[3][4].fixed = 5;
-    _data[3][7].fixed = 8;
-
-    _data[4][5].fixed = 6;
-
-    _data[5][0].fixed = 7;
-    _data[5][1].fixed = 5;
-    _data[5][8].fixed = 6;
-
-    _data[6][1].fixed = 6;
-    _data[6][2].fixed = 2;
-    _data[6][3].fixed = 4;
-    _data[6][4].fixed = 1;
-
-    _data[7][2].fixed = 4;
-    _data[7][3].fixed = 9;
-    _data[7][4].fixed = 2;
-
-    _data[8][1].fixed = 8;
-    _data[8][2].fixed = 5;
-    _data[8][5].fixed = 3;
-    _data[8][7].fixed = 4;
-    _data[8][8].fixed = 9;
-
-    _elements[0] -= 5; //1
-    _elements[1] -= 4; //2
-    _elements[2] -= 2; //3
-    _elements[3] -= 5; //4
-    _elements[4] -= 5; //5
-    _elements[5] -= 6; //6
-    _elements[6] -= 3; //7
-    _elements[7] -= 5; //8
-    _elements[8] -= 3; //9
 }
 /*----------------------------------------------------------------------------*/
 void Sudoku::FillingOptionalValues_() {
@@ -203,9 +221,9 @@ bool Sudoku::CheckingCell_(
 
     for (uint8_t i = 0; i < VERTICAL_SIZE; i++) {
             if (_data[i][*cx].fixed == *num) {
-            result = true;
-            break;
-        }
+                result = true;
+                break;
+            }
     }
     if (!result) {
         for (uint8_t i = 0; i < HORIZONTAL_SIZE; i++) {
@@ -267,8 +285,8 @@ void Sudoku::CleaningSelectedValue_(
     }
 }
 /*----------------------------------------------------------------------------*/
-void Sudoku::CleaningAllBoard_() {
-
+void Sudoku::OptimizeBoard_() {
+    warning_print("%s is not implemented", __func__);
 }
 /*----------------------------------------------------------------------------*/
 void Sudoku::FindTheOnlyOption_() {
@@ -295,7 +313,6 @@ void Sudoku::FindTheOnlyOption_() {
                         result + 1
                     );
                 }
-                
             }
         }
     }

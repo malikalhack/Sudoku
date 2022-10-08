@@ -3,7 +3,7 @@
  * @version 1.0.0
  * @authors Anton Chernov
  * @date    02/10/2022
- * @date    07/10/2022
+ * @date    08/10/2022
  */
 #ifndef ANALYSIS_H_
 #define ANALYSIS_H_
@@ -17,7 +17,8 @@
 typedef enum {
     EASY = 0,
     NORMAL,
-    HARD
+    HARD,
+    EXPERT
 } complexity;
 /******************************* Class definition *****************************/
 class Sudoku {
@@ -83,7 +84,7 @@ private:
     void FindTheOnlyOption_();
 
     /** */
-    void CleaningAllBoard_();
+    void OptimizeBoard_();
 
     /** */
     void Algorithm_();
